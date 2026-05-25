@@ -276,4 +276,15 @@
                 gamePanel.style.display = "flex";
             } else {
                 errorPrompt.style.display = "block";
-passwordInput.value = "";passwordInput.focus();}}submitButton.addEventListener('click', function(e) { e.preventDefault(); checkPassword(); });passwordInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); checkPassword(); } });launchGameButton.addEventListener('click', function() {window.open("github.io", "_blank");});function switchTheme(primaryColor, hoverColor, glowColor, element) {document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));element.classList.add('active');document.documentElement.style.setProperty('--theme-primary', primaryColor);document.documentElement.style.setProperty('--theme-hover', hoverColor);document.documentElement.style.setProperty('--theme-glow', glowColor);}{content: }
+passwordInput.value = ""
+                passwordInput.focus();
+            }
+        }
+        submitButton.addEventListener('click', function(e) { e.preventDefault();
+                                                            checkPassword(); });
+        passwordInput.addEventListener('keydown', function(e) { if (
+            e.preventDefault(); checkPassword(); } });
+        launchGameButton.addEventListener('click', function() {
+            window.open("github.io", "_blank");
+            });
+        function switchTheme(primaryColor, hoverColor, glowColor, element) {
