@@ -3,272 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAME TERMINAL</title>
+    <title>游戏中心</title>
     <style>
-        :root {
-            --matrix-green: #00ff66;
-            --bg-dark: #020403;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Consolas', 'Courier New', monospace;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--matrix-green);
+            background-color: #0f1123; /* 深蓝色背景 */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- 密码验证界面 --- */
+        #auth-panel {
+            background-color: #171932;
+            border: 1px solid #2a2d5a;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #5c62f7;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .crypto-input {
+            width: 100%;
+            background-color: #0f1123;
+            border: 1px solid #3d4279;
+            padding: 14px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .crypto-input:focus {
+            border-color: #5c62f7;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: #5c62f7;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #4a4fd4;
+        }
+
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* --- 游戏展示主页 --- */
+        #game-panel {
+            display: none; /* 初始隐藏 */
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #8c92ff;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        /* 单个游戏卡片样式（严格对齐截图） */
+        .game-card {
+            background: linear-gradient(135deg, #24164b 0%, #171932 100%);
+            border: 1px solid #2a2d5a;
+            border-radius: 12px;
+            width: 280px;
             overflow: hidden;
-            height: 100vh;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px 20px 20px;
+        }
+
+        /* 搞一把稿子图标（类似截图） */
+        .game-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        #canvas-matrix {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1;
-        }
-
-        .crt-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
-            background-size: 100% 4px;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        .terminal-container {
-            position: relative;
-            z-index: 3;
-            background: rgba(6, 12, 8, 0.95);
-            border: 2px solid var(--matrix-green);
-            box-shadow: 0 0 35px rgba(0, 255, 102, 0.35);
-            padding: 40px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        #auth-panel {
-            width: 440px;
-            text-align: center;
-        }
-
-        .hud-title {
-            font-size: 1.6rem;
-            font-weight: 900;
-            letter-spacing: 5px;
-            margin-bottom: 30px;
-            text-align: left;
-            border-left: 4px solid var(--matrix-green);
-            padding-left: 10px;
-        }
-
-        .crypto-input {
+        .game-icon svg {
             width: 100%;
-            background: #000000;
-            border: 1px solid var(--matrix-green);
-            padding: 16px;
-            color: var(--matrix-green);
-            font-size: 1.6rem;
-            letter-spacing: 8px;
-            text-align: center;
-            outline: none;
-            margin-bottom: 25px;
+            height: 100%;
+            fill: #7399ff;
         }
 
-        .neon-btn {
-            width: 100%;
-            background: rgba(0, 255, 102, 0.06);
-            border: 1px solid var(--matrix-green);
-            color: var(--matrix-green);
-            padding: 16px;
-            font-size: 1rem;
-            font-weight: bold;
-            letter-spacing: 4px;
-            cursor: pointer;
-        }
-
-        .neon-btn:hover {
-            background: var(--matrix-green);
-            color: #000000;
-        }
-
-        .error-msg {
-            color: #ff2a2a;
-            font-size: 0.85rem;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-        }
-
-        #game-panel {
-            width: 92vw;
-            max-width: 1200px;
-            height: 85vh;
-            display: none;
-            flex-direction: column;
-            opacity: 0;
-        }
-
-        .panel-header {
-            border-bottom: 1px dashed var(--matrix-green);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .game-card {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(0, 255, 102, 0.25);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .game-title {
-            font-size: 1.4rem;
+        .game-name {
+            font-size: 1.1rem;
             font-weight: bold;
             color: #ffffff;
-            margin-bottom: 4px;
-        }
-
-        .game-url {
-            font-size: 0.75rem;
-            color: rgba(0, 255, 102, 0.4);
-            word-break: break-all;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .game-desc {
-            font-size: 0.85rem;
-            color: rgba(0, 255, 102, 0.7);
-            line-height: 1.6;
-            margin-bottom: 30px;
-            border-top: 1px dashed rgba(0, 255, 102, 0.15);
-            padding-top: 12px;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .launch-btn {
-            background: rgba(0, 255, 102, 0.05);
-            border: 1px solid var(--matrix-green);
-            color: var(--matrix-green);
-            padding: 12px;
+            width: 100%;
+            background-color: #5c62f7;
+            color: #ffffff;
             text-align: center;
             text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            display: block;
+            padding: 12px 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: background-color 0.2s;
         }
 
         .launch-btn:hover {
-            background: var(--matrix-green);
-            color: #000000;
+            background-color: #4a4fd4;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas-matrix"></canvas>
-    <div class="crt-overlay"></div>
-
-    <!-- 密码验证界面 -->
-    <div class="terminal-container" id="auth-panel">
-        <div class="hud-title">CRITICAL_LOCK</div>
-        <input type="password" id="password-field" class="crypto-input" placeholder="ENTER ACCESS KEY" maxlength="12" autocomplete="off" autofocus>
-        <button type="button" id="submit-btn" class="neon-btn">[ EXECUTE DECRYPTION ]</button>
-        <div class="error-msg" id="error-prompt">⚠️ ACCESS DENIED</div>
+    <!-- 1. 密码输入界面 -->
+    <div id="auth-panel">
+        <div class="auth-title">安全锁验证</div>
+        <input type="password" id="password-field" class="crypto-input" placeholder="请输入密码" autocomplete="off" autofocus>
+        <button type="button" id="submit-btn" class="submit-btn">验证并进入</button>
+        <div class="error-msg" id="error-prompt">密码错误，拒绝访问</div>
     </div>
 
-    <!-- 游戏矩阵主页 -->
-    <div class="terminal-container" id="game-panel">
-        <div class="panel-header">
-            <div class="hud-title" style="margin: 0; padding: 0; border: none; font-size: 1.8rem;">GAME STORAGE MATRIX</div>
-        </div>
-
-        <div class="game-grid">
-            <!-- 游戏 1 -->
-            <div class="game-card">
-                <div>
-                    <div class="game-title">moderclient</div>
-                    <span class="game-url">https://github.io</span>
-                    <div class="game-desc">基于底层网元架构与 Web 汇编环境编译的游戏核心。支持高动态响应模拟。</div>
-                </div>
-                <a href="https://github.io" target="_blank" class="launch-btn">LAUNCH GAME</a>
+    <!-- 2. 游戏中心主页 (验证成功后显示) -->
+    <div id="game-panel">
+        <h1 class="page-title">游戏中心</h1>
+        
+        <!-- 只保留这一个游戏卡片 -->
+        <div class="game-card">
+            <div class="game-icon">
+                <!-- 类似截图上的方块/生存图标 -->
+                <svg viewBox="0 0 24 24">
+                    <path d="M18.85 4.54l1.41 1.41c.39.39.39 1.02 0 1.41l-1.83 1.83-2.83-2.83 1.83-1.83c.39-.39 1.03-.39 1.42 0M2 22l6.41-6.41c-.08-.34-.04-.71.12-1.05.27-.55.85-.9 1.47-.9h.01l4.01-4.01c-.13-.3-.15-.65-.04-.97.23-.62.83-1.03 1.5-1.02l-4.47-4.47C10.23 2.38 9.1 2 7.94 2c-1.83 0-3.56.71-4.85 2C1.12 6 0 8.71 0 11.58c0 2.22.68 4.3 1.95 6.04L2 22.01M16 11l.03-.03c.67.01 1.27-.4 1.5-1.02.11-.32.09-.67-.04-.97l4.01-4.01c.62.02 1.2-.33 1.47-.88.24-.5.21-1.09-.08-1.57l-3.05 3.05-2.83-2.83 3.05-3.05c-.48-.29-1.07-.32-1.57-.08-.55.27-.9.85-.88 1.47l-4.01 4.01c-.3-.13-.65-.15-.97-.04-.62.23-1.03.83-1.02 1.5L16 11z"/>
+                </svg>
             </div>
-
-            <!-- 空槽位 -->
-            <div class="game-card" style="opacity: 0.25; border-style: dashed;">
-                <div>
-                    <div class="game-title">[ EMPTY NODE_02 ]</div>
-                    <span class="game-url">NONE // UNLINKED</span>
-                    <div class="game-desc">等待后续云端存储协议数据包注入。</div>
-                </div>
-                <a href="#" class="launch-btn" style="pointer-events: none;">DISCONNECTED</a>
-            </div>
+            <div class="game-name">modern client</div>
+            <a href="https://github.io" target="_blank" class="launch-btn">立即玩玩</a>
         </div>
     </div>
 
     <script>
-        // 代码雨引擎
-        const canvas = document.getElementById('canvas-matrix');
-        const ctx = canvas.getContext('2d');
-        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', initCanvas);
-        initCanvas();
-
-        const codeChars = "0101010101X78F6A2C9B8E3D5F017423984ADCF";
-        const fontSize = 16;
-        let columns = Math.floor(canvas.width / fontSize);
-        let rainDrops = Array(columns).fill(0).map(() => Math.floor(Math.random() * -30));
-
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(2, 4, 3, 0.14)'; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.font = 'bold ' + fontSize + 'px monospace';
-            for (let i = 0; i < rainDrops.length; i++) {
-                const text = codeChars.charAt(Math.floor(Math.random() * codeChars.length));
-                const x = i * fontSize; const y = rainDrops[i] * fontSize;
-                if (y > 0) {
-                    ctx.fillStyle = Math.random() > 0.98 ? '#ffffff' : `rgba(0, 255, 102, ${Math.random() * 0.4 + 0.6})`;
-                    ctx.fillText(text, x, y);
-                }
-                if (y > canvas.height && Math.random() > 0.98) { rainDrops[i] = 0; }
-                rainDrops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 33);
-
-        // 强效原生事件解密逻辑
         const passwordInput = document.getElementById('password-field');
         const submitButton = document.getElementById('submit-btn');
         const errorPrompt = document.getElementById('error-prompt');
         const authPanel = document.getElementById('auth-panel');
         const gamePanel = document.getElementById('game-panel');
 
-        function doUnlockVerification() {
+        // 原生底层强效验证
+        function checkPassword() {
             if (passwordInput.value.trim() === "76887") {
                 errorPrompt.style.display = "none";
-                authPanel.style.opacity = "0";
-                setTimeout(() => {
-                    authPanel.style.display = "none";
-                    gamePanel.style.display = "flex";
-                    gamePanel.offsetHeight; 
-                    gamePanel.style.opacity = "1";
-                }, 300);
+                authPanel.style.display = "none";
+                gamePanel.style.display = "flex";
             } else {
                 errorPrompt.style.display = "block";
                 passwordInput.value = "";
@@ -276,8 +203,19 @@
             }
         }
 
-        submitButton.addEventListener('click', function(e) { e.preventDefault(); doUnlockVerification(); });
-        passwordInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doUnlockVerification(); } });
+        // 按钮点击触发
+        submitButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            checkPassword();
+        });
+
+        // 敲回车键触发
+        passwordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkPassword();
+            }
+        });
     </script>
 </body>
 </html>
