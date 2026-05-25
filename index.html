@@ -19,6 +19,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden;
         }
 
         /* --- 密码验证界面 --- */
@@ -31,6 +32,7 @@
             max-width: 400px;
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 10;
         }
 
         .auth-title {
@@ -98,7 +100,7 @@
             letter-spacing: 2px;
         }
 
-        /* 单个游戏卡片（严格还原截图样式） */
+        /* 游戏卡片样式 */
         .game-card {
             background: linear-gradient(135deg, #24164b 0%, #171932 100%);
             border: 1px solid #2a2d5a;
@@ -112,7 +114,6 @@
             padding: 30px 20px 20px 20px;
         }
 
-        /* 搞一把稿子图标（类似截图） */
         .game-icon {
             width: 60px;
             height: 60px;
@@ -136,20 +137,60 @@
             text-align: center;
         }
 
+        /* 触发本地加载的按钮 */
         .launch-btn {
             width: 100%;
             background-color: #5c62f7;
             color: #ffffff;
-            text-align: center;
-            text-decoration: none;
+            border: none;
             padding: 12px 0;
             font-size: 0.95rem;
             font-weight: 500;
             border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
         }
 
         .launch-btn:hover {
             background-color: #4a4fd4;
+        }
+
+        /* --- 强力反拦截全屏游戏容器 --- */
+        #game-screen-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            z-index: 100;
+        }
+
+        /* 内嵌游戏窗体，隐藏原网址特征 */
+        #game-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(23, 25, 50, 0.85);
+            border: 1px solid #3d4279;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            z-index: 101;
+            font-weight: bold;
+        }
+        .back-btn:hover {
+            background-color: #5c62f7;
         }
     </style>
 </head>
@@ -167,7 +208,6 @@
     <div id="game-panel">
         <h1 class="page-title">游戏中心</h1>
         
-        <!-- 仅保留现代客户端 -->
         <div class="game-card">
             <div class="game-icon">
                 <svg viewBox="0 0 24 24">
@@ -175,9 +215,15 @@
                 </svg>
             </div>
             <div class="game-name">modern client</div>
-            <!-- 精准校对后的官方游戏链接 -->
-            <a href="https://345gfdst5jitgj.github.io/modernclient/wasm/" target="_blank" class="launch-btn">立即玩玩</a>
+            <!-- 点击此按钮将不再跳转，而是在本地全屏载入 -->
+            <button type="button" id="launch-game-btn" class="launch-btn">立即玩玩</button>
         </div>
+    </div>
+
+    <!-- 3. 全屏游戏内置沙盒（核心绕过机制） -->
+    <div id="game-screen-container">
+        <button type="button" class="back-btn" id="close-game-btn">退出游戏</button>
+        <iframe id="game-frame" src="" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
     </div>
 
     <script>
@@ -186,7 +232,13 @@
         const errorPrompt = document.getElementById('error-prompt');
         const authPanel = document.getElementById('auth-panel');
         const gamePanel = document.getElementById('game-panel');
+        
+        const launchGameBtn = document.getElementById('launch-game-btn');
+        const gameScreenContainer = document.getElementById('game-screen-container');
+        const gameFrame = document.getElementById('game-frame');
+        const closeGameBtn = document.getElementById('close-game-btn');
 
+        // 密码检查
         function checkPassword() {
             if (passwordInput.value.trim() === "76887") {
                 errorPrompt.style.display = "none";
@@ -209,6 +261,19 @@
                 e.preventDefault();
                 checkPassword();
             }
+        });
+
+        // 核心反拦截：点击后直接在当前网页拉起全屏 iframe
+        launchGameBtn.addEventListener('click', function() {
+            // 动态注入目标网址，防止初始化时直接触发拦截
+            gameFrame.src = "https://345gfdst5jitgj.github.io/modernclient/wasm/";
+            gameScreenContainer.style.display = "block";
+        });
+
+        // 退出游戏，释放内存
+        closeGameBtn.addEventListener('click', function() {
+            gameScreenContainer.style.display = "none";
+            gameFrame.src = ""; // 彻底切断连接
         });
     </script>
 </body>
