@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>游戏中心</title>
     <style>
+        /* 动态主题 CSS 变量（默认绿色） */
+        :root {
+            --theme-primary: #00ff66;
+            --theme-hover: #00cc52;
+            --theme-bg-glow: rgba(0, 255, 102, 0.15);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,13 +20,61 @@
         }
 
         body {
-            background-color: #0f1123; /* 截图同款深蓝黑底色 */
+            background-color: #0f1123; /* 经典深蓝黑底色 */
             color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            position: relative;
         }
+
+        /* --- 左上角色彩控制中心 --- */
+        .theme-selector {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background-color: #171932;
+            border: 1px solid #2a2d5a;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .theme-selector span {
+            font-size: 0.8rem;
+            color: #8c92ff;
+            font-weight: 500;
+        }
+
+        .color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .color-dot.active {
+            border-color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        /* 预设的四个颜色 */
+        .dot-green { background-color: #00ff66; }
+        .dot-blue  { background-color: #00f3ff; }
+        .dot-red   { background-color: #ff3366; }
+        .dot-yellow { background-color: #ffcc00; }
+
 
         /* --- 密码验证界面 --- */
         #auth-panel {
@@ -31,14 +86,16 @@
             max-width: 400px;
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: border-color 0.3s;
         }
 
         .auth-title {
             font-size: 1.5rem;
             font-weight: 600;
-            color: #5c62f7;
+            color: var(--theme-primary);
             margin-bottom: 25px;
             letter-spacing: 1px;
+            transition: color 0.3s;
         }
 
         .crypto-input {
@@ -52,26 +109,28 @@
             outline: none;
             border-radius: 8px;
             margin-bottom: 20px;
+            transition: border-color 0.3s;
         }
 
         .crypto-input:focus {
-            border-color: #5c62f7;
+            border-color: var(--theme-primary);
         }
 
         .submit-btn {
             width: 100%;
-            background-color: #5c62f7;
-            color: #ffffff;
+            background-color: var(--theme-primary);
+            color: #0f1123; /* 深色文字，高亮对比 */
             border: none;
             padding: 14px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .submit-btn:hover {
-            background-color: #4a4fd4;
+            background-color: var(--theme-hover);
         }
 
         .error-msg {
@@ -80,6 +139,7 @@
             margin-top: 12px;
             display: none;
         }
+
 
         /* --- 游戏展示主页 --- */
         #game-panel {
@@ -93,23 +153,30 @@
         .page-title {
             font-size: 2.2rem;
             font-weight: bold;
-            color: #8c92ff;
+            color: #ffffff;
             margin-bottom: 40px;
             letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--theme-bg-glow);
         }
 
-        /* 单个游戏卡片布局 */
+        /* 游戏卡片布局（带动态主题发光边框） */
         .game-card {
-            background: linear-gradient(135deg, #24164b 0%, #171932 100%);
+            background: linear-gradient(135deg, #1d153b 0%, #171932 100%);
             border: 1px solid #2a2d5a;
             border-radius: 12px;
             width: 280px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 30px 20px 20px 20px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .game-card:hover {
+            border-color: var(--theme-primary);
+            box-shadow: 0 8px 30px var(--theme-bg-glow);
         }
 
         /* 卡片内图标 */
@@ -125,7 +192,8 @@
         .game-icon svg {
             width: 100%;
             height: 100%;
-            fill: #7399ff;
+            fill: var(--theme-primary);
+            transition: fill 0.3s;
         }
 
         .game-name {
@@ -136,26 +204,36 @@
             text-align: center;
         }
 
-        /* 纯静态无错超链接按钮 */
+        /* 超链接跳转按钮 */
         .launch-btn {
             display: block;
             width: 100%;
-            background-color: #5c62f7;
-            color: #ffffff;
+            background-color: var(--theme-primary);
+            color: #0f1123;
             text-align: center;
             text-decoration: none;
             padding: 12px 0;
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: bold;
             border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .launch-btn:hover {
-            background-color: #4a4fd4;
+            background-color: var(--theme-hover);
         }
     </style>
 </head>
 <body>
+
+    <!-- 左上角色彩控制中心 -->
+    <div class="theme-selector">
+        <span>更换主题:</span>
+        <div class="color-dot dot-green active" onclick="switchTheme('#00ff66', '#00cc52', 'rgba(0,255,102,0.2)', this)"></div>
+        <div class="color-dot dot-blue" onclick="switchTheme('#00f3ff', '#00b0cc', 'rgba(0,243,255,0.2)', this)"></div>
+        <div class="color-dot dot-red" onclick="switchTheme('#ff3366', '#cc2452', 'rgba(255,51,102,0.2)', this)"></div>
+        <div class="color-dot dot-yellow" onclick="switchTheme('#ffcc00', '#cca300', 'rgba(255,204,0,0.2)', this)"></div>
+    </div>
 
     <!-- 1. 密码输入界面 -->
     <div id="auth-panel">
@@ -176,12 +254,13 @@
                 </svg>
             </div>
             <div class="game-name">modern client</div>
-            <!-- 绝对正确的目标官方游戏长网址 -->
-            <a href="https://345gfdst5jitgj.github.io/modernclient/wasm/" target="_blank" class="launch-btn">立即玩玩</a>
+            <!-- 精准无错的长链接路径 -->
+            <a href="https://github.io" target="_blank" class="launch-btn">立即玩玩</a>
         </div>
     </div>
 
     <script>
+        // --- 核心密码验证逻辑 ---
         const passwordInput = document.getElementById('password-field');
         const submitButton = document.getElementById('submit-btn');
         const errorPrompt = document.getElementById('error-prompt');
@@ -189,7 +268,6 @@
         const gamePanel = document.getElementById('game-panel');
 
         function checkPassword() {
-            // 精准校验 76887
             if (passwordInput.value.trim() === "76887") {
                 errorPrompt.style.display = "none";
                 authPanel.style.display = "none";
@@ -212,6 +290,18 @@
                 checkPassword();
             }
         });
+
+        // --- 主题颜色实时切换引擎 ---
+        function switchTheme(primaryColor, hoverColor, glowColor, element) {
+            // 切换左上角小圆点的 active 样式
+            document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
+            element.classList.add('active');
+
+            // 动态修改全局 CSS 主题变量
+            document.documentElement.style.setProperty('--theme-primary', primaryColor);
+            document.documentElement.style.setProperty('--theme-hover', hoverColor);
+            document.documentElement.style.setProperty('--theme-bg-glow', glowColor);
+        }
     </script>
 </body>
 </html>
